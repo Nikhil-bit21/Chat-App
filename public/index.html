@@ -10,29 +10,55 @@
 
     <input type="text" id="message" placeholder="Enter Message">
     <button id="sendBtn">Send</button>
+    <button id="DisconnectBtn">Disconnect</button>
 
     <div id="messages"></div>
-
+    <!-- this is used to load the the socket.io-client which is a client library that loads on the browser side for using socket.io -->
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        const socket = io();
+        const socket = io(); // there is no url passed to this io() bcz it tries to connect to the host which calls it
         const sendBtn = document.getElementById('sendBtn')
+        const DisconnectBtn = document.getElementById('DisconnectBtn');
         const messageInput = document.getElementById('message')
         const allMessages = document.getElementById('messages');
 
         socket.on('msg',(message)=>{
             // console.log(message);
-            const p =document.createElement('p');
-            p.innerText = message;
-            allMessages.appendChild(p);
+            const item = document.createElement('li');
+            item.textContent = message;
+            allMessages.appendChild(item);
+            window.scrollTo(0,document.body.scrollHeight);
         })
+
+        // socket.on('wait-message',(arg1 , cb)=>{
+        //     console.log(arg1);
+        //     cb({
+        //         status:'reached message'
+        //     })
+        // })
 
         sendBtn.addEventListener('click',e=>{
             const message = messageInput.value;
             // console.log(message);
-            socket.emit('user-msg',message);
+            e.preventDefault();
+            if(message){
+                socket.emit('user-msg',message);
+                messageInput.value = ''
+            }
         })
+        
+        DisconnectBtn.addEventListener('click',(e)=>{
+            e.preventDefault();
+            if(socket.connected){
+                DisconnectBtn.innerText = 'Connect';
+                socket.disconnect();
+            }else{
+                DisconnectBtn.innerText = 'Disconnect';
+                socket.connect();
+            }
+        })
+
     </script>
 
 </body>
