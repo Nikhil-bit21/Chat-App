@@ -17,18 +17,23 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-        const socket = io(); // there is no url passed to this io() bcz it tries to connect to the host which calls it
+        const socket = io({
+            auth:{
+                serverOffset:0
+            }
+        }); // there is no url passed to this io() bcz it tries to connect to the host which calls it
         const sendBtn = document.getElementById('sendBtn')
         const DisconnectBtn = document.getElementById('DisconnectBtn');
         const messageInput = document.getElementById('message')
         const allMessages = document.getElementById('messages');
 
-        socket.on('msg',(message)=>{
+        socket.on('msg',(message,serverOffset)=>{
             // console.log(message);
             const item = document.createElement('li');
             item.textContent = message;
             allMessages.appendChild(item);
             window.scrollTo(0,document.body.scrollHeight);
+            socket.auth.serverOffset = serverOffset;
         })
 
         // socket.on('wait-message',(arg1 , cb)=>{
